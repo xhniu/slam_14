@@ -58,7 +58,8 @@ public:
     base(const std::string& name, const setup_type_t setup_type, const model_type_t model_type, const color_order_t color_order,
          const unsigned int cols, const unsigned int rows, const double fps,
          const double focal_x_baseline, const double true_baseline,
-         const unsigned int num_grid_cols = 64, const unsigned int num_grid_rows = 48);
+         const unsigned int num_grid_cols = 1, const unsigned int num_grid_rows = 1);
+         // const unsigned int num_grid_cols = 64, const unsigned int num_grid_rows = 48);
 
     //! Destructor
     virtual ~base();

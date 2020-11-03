@@ -27,21 +27,32 @@ void orb_compare(const std::shared_ptr<openvslam::config>& im_cfg,
     auto extractor_im = new feature::orb_extractor(im_cfg->orb_params_);
     auto extractor_rs = new feature::orb_extractor(rs_cfg->orb_params_);
 
-    // auto img_im= cv::imread("/home/yh/workspace/openvslam/data/kinect_data_0/OutputPics/IMG_63710000.jpg", cv::IMREAD_UNCHANGED);
-    // auto img_im= cv::imread("../data/iphone/test_0.JPG", cv::IMREAD_UNCHANGED);
-    Mat img_img_src = cv::imread("/home/yh/workspace/openvslam/data/kinect_data_0/OutputPics/IMG_63710000.jpg", cv::IMREAD_UNCHANGED);
+    auto img_im= cv::imread("/home/yh/workspace/openvslam/data/kinect_data_0/OutputPics/IMG_63710000.jpg", cv::IMREAD_UNCHANGED);
+    // Mat img_im_src = cv::imread("../data/iphone/test_2.JPG", cv::IMREAD_UNCHANGED);
+    // Mat img_im_src = cv::imread("../data/1305031112.311312.png", cv::IMREAD_UNCHANGED);
 
-    Mat img_im;
+    
+
+    // Mat img_im;
+    // resize(img_im_src, img_im, Size(1920, 1080), 0, 0, INTER_LINEAR);        
+
+    // Mat img_img_src = cv::imread("/home/yh/workspace/openvslam/data/kinect_data_0/OutputPics/IMG_63710000.jpg", cv::IMREAD_UNCHANGED);
+
+    
 
     // auto img_im = cv::imread("/home/yh/workspace/openvslam/data/kinect_data_0/rgb/1602742001.819397.png", cv::IMREAD_UNCHANGED);
-    // auto img_rs= cv::imread("../data/iphone/test_1.JPG", cv::IMREAD_UNCHANGED);
+    // Mat img_rs_src = cv::imread("../data/iphone/test_3.JPG", cv::IMREAD_UNCHANGED);
+    // Mat img_rs;
+    // resize(img_rs_src, img_rs, Size(1920, 1080), 0, 0, INTER_LINEAR);        
+
     auto img_rs = cv::imread("/home/yh/workspace/openvslam/data/kinect_data_0/rgb/1602742001.752495.png", cv::IMREAD_UNCHANGED);
 
-    resize(img_img_src, img_im, Size(img_rs.cols, img_rs.rows), 0, 0, INTER_LINEAR);    
+    // resize(img_img_src, img_im, Size(img_rs.cols, img_rs.rows), 0, 0, INTER_LINEAR);    
 
     auto camera_im = im_cfg->camera_;
     auto camera_rs = rs_cfg->camera_;
 
+    std::cout << "camera_im" << im_cfg->camera_ << std::endl;
     auto frm_im = data::frame(img_im, 0., extractor_im, nullptr, camera_im, im_cfg->true_depth_thr_, cv::Mat{});
     auto frm_rs = data::frame(img_rs, 0., extractor_rs, nullptr, camera_rs, rs_cfg->true_depth_thr_, cv::Mat{});
 
@@ -81,8 +92,11 @@ void orb_compare(const std::shared_ptr<openvslam::config>& im_cfg,
     chrono::duration<double> time_used = chrono::duration_cast<chrono::duration<double>> ( t2-t1 );
     cout<<"opencvslam costs time: "<<time_used.count() <<" seconds."<<endl;
 
+    // drawKeypoints(img_1, keypoints_1, outimg1, Scalar::all(-1), DrawMatchesFlags::DEFAULT);
+
     Mat img_goodmatch;
     cv::drawMatches ( img_im, frm_im.keypts_, img_rs, frm_rs.keypts_, good_matches, img_goodmatch );
+
     cv::resize(img_goodmatch, img_goodmatch, Size(int(2560*0.7), int(720*0.7)));
     cv::imshow("match", img_goodmatch);
     cv::waitKey(0);
@@ -238,7 +252,7 @@ void OrbMatch()
 }
 int main()
 {
-#if 1
+#if 0
     OrbMatch();
 
     return 0;
@@ -249,16 +263,20 @@ int main()
     google::InstallFailureSignalHandler();
 #endif
 
-    std::string indemind_config_file_path = "/home/yh/workspace/openvslam/example/tum_rgbd/TUM_xsmax_1080.yaml";
+    // std::string indemind_config_file_path = "/Users/aniu/workspace/projects/slam/openvslam/example/tum_rgbd/TUM_xsmax_1080.yaml";
+    std::string indemind_config_file_path = "/Users/aniu/workspace/projects/slam/openvslam/example/TUM_RGBD_rgbd_k960_mono.yaml";
 
     // std::string indemind_config_file_path = "/home/yh/workspace/openvslam/example/tum_rgbd/TUM_RGBD_rgbd_k960_mono.yaml";
 
-    std::string realsense_config_file_path = "/home/yh/workspace/openvslam/example/tum_rgbd/TUM_RGBD_rgbd_k960_mono.yaml";
-
+    // std::string realsense_config_file_path = "~/workspace/projects/slam/openvslam/example/tum_rgbd/TUM_RGBD_rgbd_k960_mono.yaml";
+    // std::string realsense_config_file_path = "/Users/aniu/workspace/projects/slam/openvslam/example/tum_rgbd/TUM_xsmax_1080.yaml";    
+    std::string realsense_config_file_path = "/Users/aniu/workspace/projects/slam/openvslam/example/TUM_RGBD_rgbd_k960_mono.yaml";
+    
     // setup logger
     spdlog::set_pattern("[%Y-%m-%d %H:%M:%S.%e] %^[%L] %v%$");
 
     spdlog::set_level(spdlog::level::debug);
+
 
     // load configuration
     std::shared_ptr<openvslam::config> indemind_cfg;
@@ -278,7 +296,6 @@ int main()
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
-
 
     orb_compare(indemind_cfg, realsense_cfg);
 
